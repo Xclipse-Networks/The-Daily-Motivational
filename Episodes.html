@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE DAILY MOTIVATIONAL | THE LIBRARY</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Montserrat:wght@400;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body { background: #050505; color: white; font-family: 'Montserrat', sans-serif; }
+        .font-display { font-family: 'Syncopate', sans-serif; }
+        .episode-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .episode-card:hover { border-color: #f59e0b; transform: translateY(-8px); background: rgba(245, 158, 11, 0.05); }
+        .ui-element { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .active-sort { background: #f59e0b !important; color: black !important; }
+        .loader {
+            width: 40px; height: 40px; border: 3px solid #f59e0b; border-bottom-color: transparent;
+            border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="p-6 md:p-16">
+
+    <header class="max-w-7xl mx-auto mb-12">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+            <div>
+                <div class="flex items-center gap-4 mb-4">
+                    <h1 class="font-display text-3xl md:text-5xl uppercase italic tracking-tighter leading-none">
+                        The <span class="text-[#f59e0b]">Library</span>
+                    </h1>
+                    <span id="total-badge" class="px-3 py-1 bg-[#f59e0b]/10 text-[#f59e0b] rounded-full text-[10px] font-bold border border-[#f59e0b]/30 opacity-0 transition-opacity">0 EPISODES</span>
+                </div>
+                <p class="text-gray-500 text-[10px] uppercase tracking-[0.5em] font-bold italic">Full Episode Archive</p>
+            </div>
+            <a href="index.html" class="text-[9px] font-black border border-white/10 px-8 py-4 rounded-full hover:bg-white hover:text-black transition uppercase tracking-[0.2em]">
+                ← Back to Home
+            </a>
+        </div>
+
+        <div class="mt-12 flex flex-col lg:flex-row gap-4 items-center">
+            <div class="relative flex-1 w-full">
+                <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                <input type="text" id="episodeSearch" placeholder="SEARCH ARCHIVE..." class="ui-element w-full py-5 pl-16 pr-8 rounded-full text-[11px] font-bold tracking-widest uppercase focus:outline-none focus:border-[#f59e0b]">
+            </div>
+            <div class="flex gap-2 w-full lg:w-auto">
+                <button id="sortNew" class="ui-element active-sort flex-1 lg:flex-none px-8 py-5 rounded-full text-[9px] font-black uppercase tracking-widest transition">Newest First</button>
+                <button id="sortOld" class="ui-element flex-1 lg:flex-none px-8 py-5 rounded-full text-[9px] font-black uppercase tracking-widest transition">Oldest First</button>
+            </div>
+        </div>
+        <p id="results-text" class="text-[9px] text-gray-600 uppercase tracking-[0.2em] mt-6 font-bold"></p>
+    </header>
+
+    <div id="loading" class="text-center py-24">
+        <span class="loader"></span>
+        <p class="text-[10px] tracking-[0.4em] uppercase opacity-40 mt-4">Connecting to Broadcast Pipeline...</p>
+    </div>
+
+    <div id="archive-grid" class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
+
+    <div id="no-results" class="hidden text-center py-20">
+        <p class="text-gray-500 uppercase tracking-widest text-sm italic">No records match your search query.</p>
+    </div>
+
+    <footer class="mt-40 pb-20 text-center opacity-20 text-[9px] tracking-[0.6em] uppercase font-black">
+        © 2026 THE DAILY MOTIVATIONAL
+    </footer>
+
+    <script>
+        const RSS_URL = 'https://anchor.fm/s/10b063cfc/podcast/rss';
+        
+        let allEpisodes = [];
+        let currentSort = 'new';
+
+        async function fetchWithTimeout(resource, options = {}) {
+            const { timeout = 8000 } = options;
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            const response = await fetch(resource, { ...options, signal: controller.signal });
+            clearTimeout(id);
+            return response;
+        }
+
+        async function fetchArchive() {
+            // We use AllOrigins but with a direct query param to force freshness
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(RSS_URL)}&callback=?&_=${new Date().getTime()}`;
+            
+            try {
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                
+                // AllOrigins returns JSON with a 'contents' string which is the XML
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+                const items = xmlDoc.querySelectorAll("item");
+                
+                if(!items || items.length === 0) throw new Error("No data");
+
+                allEpisodes = Array.from(items).map(item => ({
+                    title: item.querySelector("title")?.textContent || "Untitled",
+                    link: item.querySelector("link")?.textContent || "#",
+                    pubDate: item.querySelector("pubDate")?.textContent || "",
+                    thumbnail: item.getElementsByTagName("itunes:image")[0]?.getAttribute("href") || 'image_c6503f.jpg',
+                    audio: item.querySelector("enclosure")?.getAttribute("url") || ""
+                }));
+
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('total-badge').innerText = `${allEpisodes.length} EPISODES`;
+                document.getElementById('total-badge').classList.remove('opacity-0');
+                filterAndSort();
+
+            } catch (error) {
+                console.error("Fetch error:", error);
+                document.getElementById('loading').innerHTML = `
+                    <div class="max-w-md mx-auto p-8 border border-[#f59e0b]/20 rounded-[2rem]">
+                        <p class="text-primary text-[10px] tracking-widest uppercase mb-6">Pipeline Timeout (High Traffic)</p>
+                        <div class="flex flex-col gap-3">
+                            <button onclick="location.reload()" class="w-full py-4 bg-[#f59e0b] text-black text-[9px] font-black rounded-full uppercase">Try Again</button>
+                            <a href="https://podcasters.spotify.com/pod/show/the-daily-motivational" target="_blank" class="w-full py-4 border border-white/10 text-white text-[9px] font-black rounded-full uppercase">View on Spotify Instead</a>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function renderEpisodes(episodes) {
+            const container = document.getElementById('archive-grid');
+            container.innerHTML = '';
+            document.getElementById('results-text').innerText = `Displaying ${episodes.length} of ${allEpisodes.length} archived broadcasts`;
+            
+            if (episodes.length === 0) {
+                document.getElementById('no-results').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('no-results').classList.add('hidden');
+            episodes.forEach(item => {
+                const date = new Date(item.pubDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                container.innerHTML += `
+                    <div class="episode-card p-6 rounded-[2.5rem] flex flex-col group">
+                        <div class="relative aspect-square overflow-hidden rounded-[1.8rem] mb-6 shadow-2xl">
+                            <img src="${item.thumbnail}" onerror="this.src='image_c6503f.jpg'" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+                            <a href="${item.link}" target="_blank" class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
+                                 <div class="w-12 h-12 bg-[#f59e0b] text-black rounded-full flex items-center justify-center scale-75 group-hover:scale-100 transition-transform">
+                                     <i class="fas fa-play ml-1"></i>
+                                 </div>
+                            </a>
+                        </div>
+                        <span class="text-[#f59e0b] text-[9px] font-black tracking-[0.3em] uppercase mb-3">${date}</span>
+                        <h3 class="text-[13px] font-extrabold leading-snug uppercase italic mb-6 flex-grow line-clamp-3">${item.title}</h3>
+                        <a href="${item.audio}" class="w-full py-4 bg-white/5 hover:bg-[#f59e0b] hover:text-black rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] text-center transition-all">Listen Now</a>
+                    </div>`;
+            });
+        }
+
+        const searchInput = document.getElementById('episodeSearch');
+        const sortNewBtn = document.getElementById('sortNew');
+        const sortOldBtn = document.getElementById('sortOld');
+
+        function filterAndSort() {
+            let filtered = allEpisodes.filter(ep => ep.title.toLowerCase().includes(searchInput.value.toLowerCase()));
+            filtered.sort((a, b) => currentSort === 'new' ? new Date(b.pubDate) - new Date(a.pubDate) : new Date(a.pubDate) - new Date(b.pubDate));
+            renderEpisodes(filtered);
+        }
+
+        searchInput.oninput = filterAndSort;
+        sortNewBtn.onclick = () => { currentSort = 'new'; updateBtns(); filterAndSort(); };
+        sortOldBtn.onclick = () => { currentSort = 'old'; updateBtns(); filterAndSort(); };
+        function updateBtns() { sortNewBtn.classList.toggle('active-sort', currentSort === 'new'); sortOldBtn.classList.toggle('active-sort', currentSort === 'old'); }
+
+        document.addEventListener('DOMContentLoaded', fetchArchive);
+    </script>
+</body>
+</html>

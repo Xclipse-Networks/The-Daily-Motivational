@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE DAILY MOTIVATIONAL | OFFICIAL PORTAL</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#f59e0b', 
+                        dark: '#050505'
+                    },
+                    fontFamily: { 
+                        sans: ['Montserrat', 'sans-serif'],
+                        display: ['Syncopate', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html { scroll-behavior: smooth; background: #050505; color: white; cursor: crosshair; }
+        .mesh-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 50%, #111 0%, #050505 100%); }
+        .blob { position: absolute; width: 600px; height: 600px; background: rgba(245, 158, 11, 0.04); filter: blur(100px); border-radius: 50%; animation: morph 20s infinite alternate linear; }
+        @keyframes morph { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(10%, 10%) scale(1.1); } }
+        .reveal-text { background: linear-gradient(to right, #fff 20%, #f59e0b 40%, #f59e0b 60%, #fff 80%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 6s linear infinite; }
+        @keyframes shine { to { background-position: 200% center; } }
+        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .music-bar { background: rgba(5, 5, 5, 0.98); border-top: 1px solid rgba(245, 158, 11, 0.15); }
+    </style>
+</head>
+
+<body class="selection:bg-primary selection:text-black">
+
+    <div class="mesh-bg">
+        <div class="blob" style="top: -10%; left: -10%;"></div>
+        <div class="blob" style="bottom: -10%; right: -10%; background: rgba(59, 130, 246, 0.03);"></div>
+    </div>
+
+    <header class="fixed top-0 w-full z-[1000] px-8 py-6 md:px-16 flex justify-between items-center mix-blend-difference">
+        <a href="#home" class="font-display text-lg md:text-xl font-bold tracking-tighter uppercase italic">
+            THE DAILY <span class="text-primary">MOTIVATIONAL</span>
+        </a>
+        <nav class="hidden lg:flex items-center gap-12 font-bold text-[9px] uppercase tracking-[0.4em]">
+            <a href="#home" class="hover:text-primary transition">Home</a>
+            <a href="Episodes.html" class="hover:text-primary transition">Episodes</a>
+            <a href="#platforms" class="hover:text-primary transition">Platforms</a>
+            <a href="mailto:contact@dailymotivational.com" class="px-6 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-dark transition-all">Booking</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="min-h-screen flex items-center justify-center pt-20 px-6 relative">
+            <div class="text-center z-10" data-aos="zoom-out" data-aos-duration="1500">
+                <div class="mb-10 relative inline-block group">
+                    <div class="absolute -inset-10 bg-primary/10 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <img id="hero-art" src="logo.png" 
+                         class="relative w-64 h-64 md:w-[450px] md:h-[450px] object-cover rounded-[3rem] shadow-2xl border border-white/5 transition-all duration-1000 group-hover:scale-105" alt="Hero Art">
+                </div>
+
+                <div class="max-w-5xl mx-auto">
+                    <h2 class="font-display text-primary text-[10px] md:text-[12px] tracking-[0.8em] mb-6 opacity-80 uppercase block">
+                        KILL THE OLD YOU AND REBUILD YOURSELF AGAIN
+                    </h2>
+                    <h1 class="reveal-text text-4xl md:text-[7rem] font-black italic tracking-tighter uppercase leading-[0.85] mb-12">
+                        THE DAILY MOTIVATIONAL
+                    </h1>
+                    <div class="flex flex-col sm:flex-row justify-center gap-6 items-center">
+                        <button onclick="scrollToEpisodes()" class="min-w-[250px] bg-white text-dark font-black text-[10px] py-5 px-10 rounded-full hover:bg-primary hover:text-white transition shadow-xl uppercase tracking-widest">
+                            The Daily Motivational
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="episodes" class="py-32 relative px-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex justify-between items-end mb-20 border-b border-white/5 pb-12">
+                    <div>
+                        <h2 class="font-display text-3xl md:text-5xl font-black tracking-tighter italic uppercase">Live<br><span class="text-primary">Pipeline</span></h2>
+                    </div>
+                </div>
+                <div id="rss-container" class="grid grid-cols-1 md:grid-cols-3 gap-10"></div>
+            </div>
+        </section>
+
+        <section id="platforms" class="py-32 relative">
+            <div class="max-w-5xl mx-auto px-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="glass-card p-12 rounded-[3.5rem] text-center">
+                        <i class="fab fa-spotify text-primary text-3xl mb-6"></i>
+                        <h4 class="text-4xl font-black italic tracking-tighter mb-2">SPOTIFY</h4>
+                    </div>
+                    <div class="glass-card p-12 rounded-[3.5rem] text-center">
+                        <i class="fab fa-apple text-white text-3xl mb-6"></i>
+                        <h4 class="text-4xl font-black italic tracking-tighter mb-2">APPLE</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="music-bar fixed bottom-0 left-0 w-full z-[99999] px-6 py-4 grid grid-cols-1 md:grid-cols-3 items-center gap-6">
+        <div class="flex items-center gap-4">
+            <img id="player-art" src="logo.png" class="w-12 h-12 rounded-xl object-cover border border-primary/20" alt="">
+            <div class="min-w-0">
+                <p id="player-title" class="text-[10px] font-bold truncate uppercase italic text-white">Select an Episode</p>
+                <p class="text-[8px] text-gray-500 uppercase font-black tracking-widest">Daily Motivational</p>
+            </div>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+            <button id="play-btn" class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 transition shadow-lg">
+                <i class="fas fa-play text-sm ml-0.5"></i>
+            </button>
+            <div class="flex items-center gap-3 w-full max-w-sm">
+                <span id="current-time" class="text-[8px] font-mono text-primary">0:00</span>
+                <input type="range" id="progress-slider" value="0" min="0" max="100" class="flex-1 accent-primary">
+                <span id="duration-time" class="text-[8px] font-mono text-gray-600">0:00</span>
+            </div>
+        </div>
+        <div class="hidden md:flex justify-end px-6">
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.8" class="w-24 accent-primary">
+        </div>
+    </div>
+
+    <audio id="main-audio"></audio>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        const RSS_URL = 'https://anchor.fm/s/10b063cfc/podcast/rss';
+        const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
+        const audio = document.getElementById('main-audio');
+        const playBtn = document.getElementById('play-btn');
+        const progressSlider = document.getElementById('progress-slider');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({ duration: 1200, once: true });
+            fetchFeed();
+            initAudioEngine();
+        });
+
+        async function fetchFeed() {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                if(data.status === 'ok') {
+                    const latest = data.items[0];
+                    // DISABLED: We no longer overwrite hero-art.src with latest.thumbnail
+                    
+                    loadTrack(latest.enclosure.link, latest.title, latest.thumbnail);
+                    const container = document.getElementById('rss-container');
+                    data.items.slice(0, 6).forEach((item, index) => {
+                        container.innerHTML += `
+                            <div class="group glass-card rounded-[3rem] p-6 cursor-pointer" onclick="loadTrack('${item.enclosure.link}', '${item.title.replace(/'/g, "\\'")}', '${item.thumbnail}')">
+                                <div class="overflow-hidden rounded-[2rem] aspect-square mb-6">
+                                    <img src="${item.thumbnail}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                                </div>
+                                <h3 class="text-lg font-bold italic uppercase group-hover:text-primary transition">${item.title}</h3>
+                            </div>`;
+                    });
+                }
+            } catch (e) { console.error("RSS Error"); }
+        }
+
+        function loadTrack(url, title, art) {
+            audio.src = url;
+            document.getElementById('player-title').innerText = title;
+            document.getElementById('player-art').src = art;
+            if(!audio.paused || audio.currentTime > 0) togglePlay();
+        }
+
+        function togglePlay() {
+            if (audio.paused) { audio.play(); playBtn.innerHTML = '<i class="fas fa-pause"></i>'; }
+            else { audio.pause(); playBtn.innerHTML = '<i class="fas fa-play ml-0.5"></i>'; }
+        }
+
+        function initAudioEngine() {
+            playBtn.onclick = togglePlay;
+            audio.ontimeupdate = () => {
+                progressSlider.value = (audio.currentTime / audio.duration) * 100 || 0;
+                document.getElementById('current-time').innerText = formatTime(audio.currentTime);
+            };
+            audio.onloadedmetadata = () => document.getElementById('duration-time').innerText = formatTime(audio.duration);
+            progressSlider.oninput = () => audio.currentTime = (progressSlider.value / 100) * audio.duration;
+            document.getElementById('volume-slider').oninput = (e) => audio.volume = e.target.value;
+        }
+
+        function formatTime(secs) {
+            const m = Math.floor(secs / 60), s = Math.floor(secs % 60);
+            return `${m}:${s < 10 ? '0'+s : s}`;
+        }
+
+        function scrollToEpisodes() { document.getElementById('episodes').scrollIntoView({ behavior: 'smooth' }); }
+    </script>
+</body>
+</html>
